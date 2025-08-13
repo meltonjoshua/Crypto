@@ -1,0 +1,182 @@
+2025-08-13 15:25:10,065 - INFO - 🔄 Starting background data update...
+2025-08-13 15:25:10,074 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.0.3.55:8080
+2025-08-13 15:25:10,074 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-13 15:25:10,298 - ERROR - ❌ Error updating BTC-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:10,387 - ERROR - ❌ Error updating ETH-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:10,488 - ERROR - ❌ Error updating ADA-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:10,556 - ERROR - ❌ Error updating SOL-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:10,631 - ERROR - ❌ Error updating DOGE-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:10,717 - ERROR - ❌ Error updating LTC-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:10,717 - INFO - 🎉 Background data update completed
+2025-08-13 15:25:16,663 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:16] "GET / HTTP/1.1" 200 -
+2025-08-13 15:25:17,335 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:17] "GET /api/alerts HTTP/1.1" 200 -
+2025-08-13 15:25:17,369 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:17] "GET /api/portfolio HTTP/1.1" 200 -
+2025-08-13 15:25:17,381 - ERROR - Error processing BTC-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:17,385 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:17] "GET /api/signals HTTP/1.1" 200 -
+2025-08-13 15:25:17,478 - ERROR - Error generating chart for BTC-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:17,478 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:17] "GET /api/chart/BTC-USD HTTP/1.1" 200 -
+2025-08-13 15:25:17,518 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:17] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-08-13 15:25:17,629 - ERROR - Error processing ETH-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:17,844 - ERROR - Error processing ADA-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:18,043 - ERROR - Error processing SOL-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:18,224 - ERROR - Error processing DOGE-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:18,253 - ERROR - Error fetching real-time price for LTC-USD: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true
+2025-08-13 15:25:18,374 - ERROR - Error processing LTC-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:18,375 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:18] "GET /api/prices HTTP/1.1" 200 -
+2025-08-13 15:25:47,831 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:47] "GET /api/alerts HTTP/1.1" 200 -
+2025-08-13 15:25:47,846 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:47] "GET /api/portfolio HTTP/1.1" 200 -
+2025-08-13 15:25:47,925 - ERROR - Error fetching real-time price for BTC-USD: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true
+2025-08-13 15:25:48,005 - ERROR - Error processing BTC-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:48,008 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:48] "GET /api/signals HTTP/1.1" 200 -
+2025-08-13 15:25:48,033 - ERROR - Error fetching real-time price for ETH-USD: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true
+2025-08-13 15:25:48,114 - ERROR - Error processing ETH-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:48,123 - ERROR - Error generating chart for BTC-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:48,123 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:48] "GET /api/chart/BTC-USD HTTP/1.1" 200 -
+2025-08-13 15:25:48,165 - ERROR - Error fetching real-time price for ADA-USD: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true
+2025-08-13 15:25:48,232 - ERROR - Error processing ADA-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:48,273 - ERROR - Error fetching real-time price for SOL-USD: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true
+2025-08-13 15:25:48,351 - ERROR - Error processing SOL-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:48,382 - ERROR - Error fetching real-time price for DOGE-USD: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true
+2025-08-13 15:25:48,488 - ERROR - Error processing DOGE-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:48,519 - ERROR - Error fetching real-time price for LTC-USD: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true
+2025-08-13 15:25:48,574 - ERROR - Error processing LTC-USD: Error binding parameter 2: type 'Timestamp' is not supported
+2025-08-13 15:25:48,575 - INFO - 127.0.0.1 - - [13/Aug/2025 15:25:48] "GET /api/prices HTTP/1.1" 200 -
+2025-08-13 15:33:30,369 - INFO - 🔄 Starting background data update...
+2025-08-13 15:33:30,375 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.0.3.55:8080
+2025-08-13 15:33:30,375 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-13 15:33:30,846 - INFO - ✅ Updated BTC-USD: $120633.00 - INSUFFICIENT_DATA
+2025-08-13 15:33:32,638 - INFO - 127.0.0.1 - - [13/Aug/2025 15:33:32] "GET / HTTP/1.1" 200 -
+2025-08-13 15:33:33,256 - INFO - 127.0.0.1 - - [13/Aug/2025 15:33:33] "GET /api/portfolio HTTP/1.1" 200 -
+2025-08-13 15:33:33,290 - INFO - 127.0.0.1 - - [13/Aug/2025 15:33:33] "GET /api/alerts HTTP/1.1" 200 -
+2025-08-13 15:33:33,294 - INFO - 127.0.0.1 - - [13/Aug/2025 15:33:33] "GET /api/signals HTTP/1.1" 200 -
+2025-08-13 15:33:33,387 - INFO - 127.0.0.1 - - [13/Aug/2025 15:33:33] "GET /api/chart/BTC-USD HTTP/1.1" 200 -
+2025-08-13 15:33:34,096 - INFO - ✅ Updated ETH-USD: $4641.75 - INSUFFICIENT_DATA
+2025-08-13 15:33:37,330 - INFO - ✅ Updated ADA-USD: $0.87 - INSUFFICIENT_DATA
+2025-08-13 15:33:39,607 - INFO - 127.0.0.1 - - [13/Aug/2025 15:33:39] "GET /api/chart/BTC-USD HTTP/1.1" 200 -
+2025-08-13 15:33:40,793 - INFO - ✅ Updated SOL-USD: $196.64 - INSUFFICIENT_DATA
+2025-08-13 15:33:42,459 - WARNING - Rate limited for DOGE-USD, using fallback
+2025-08-13 15:33:44,056 - INFO - ✅ Updated DOGE-USD: $0.24 - INSUFFICIENT_DATA
+2025-08-13 15:33:44,864 - WARNING - Rate limited for LTC-USD, using fallback
+2025-08-13 15:33:45,297 - INFO - 127.0.0.1 - - [13/Aug/2025 15:33:45] "GET /api/prices HTTP/1.1" 200 -
+2025-08-13 15:33:47,129 - WARNING - Rate limited for LTC-USD, using fallback
+2025-08-13 15:33:47,342 - INFO - ✅ Updated LTC-USD: $130.33 - INSUFFICIENT_DATA
+2025-08-13 15:33:47,342 - INFO - 🎉 Background data update completed
+2025-08-13 15:34:53,185 - INFO - 127.0.0.1 - - [13/Aug/2025 15:34:53] "GET / HTTP/1.1" 200 -
+2025-08-13 15:35:13,195 - INFO - 127.0.0.1 - - [13/Aug/2025 15:35:13] "GET /api/alerts HTTP/1.1" 200 -
+2025-08-13 15:35:13,199 - INFO - 127.0.0.1 - - [13/Aug/2025 15:35:13] "GET /api/portfolio HTTP/1.1" 200 -
+2025-08-13 15:35:13,202 - INFO - 127.0.0.1 - - [13/Aug/2025 15:35:13] "GET /api/signals HTTP/1.1" 200 -
+2025-08-13 15:35:14,300 - WARNING - Rate limited for LTC-USD, using fallback
+2025-08-13 15:35:14,640 - INFO - 127.0.0.1 - - [13/Aug/2025 15:35:14] "GET /api/prices HTTP/1.1" 200 -
+2025-08-13 15:37:45,283 - INFO - 127.0.0.1 - - [13/Aug/2025 15:37:45] "GET / HTTP/1.1" 200 -
+2025-08-13 15:37:56,380 - WARNING - Rate limited for LTC-USD, using fallback
+2025-08-13 15:37:56,660 - INFO - 127.0.0.1 - - [13/Aug/2025 15:37:56] "GET /api/prices HTTP/1.1" 200 -
+2025-08-13 15:37:56,663 - INFO - 127.0.0.1 - - [13/Aug/2025 15:37:56] "GET /api/alerts HTTP/1.1" 200 -
+2025-08-13 15:37:56,666 - INFO - 127.0.0.1 - - [13/Aug/2025 15:37:56] "GET /api/portfolio HTTP/1.1" 200 -
+2025-08-13 15:37:56,670 - INFO - 127.0.0.1 - - [13/Aug/2025 15:37:56] "GET /api/signals HTTP/1.1" 200 -
+2025-08-13 15:37:56,740 - INFO - 127.0.0.1 - - [13/Aug/2025 15:37:56] "GET /api/chart/BTC-USD HTTP/1.1" 200 -
+2025-08-13 15:37:56,776 - WARNING - Rate limited for BTC-USD, using fallback
+2025-08-13 15:37:59,202 - WARNING - Rate limited for ETH-USD, using fallback
+2025-08-13 15:38:01,524 - WARNING - Rate limited for ADA-USD, using fallback
+2025-08-13 15:38:03,864 - WARNING - Rate limited for SOL-USD, using fallback
+2025-08-13 15:38:06,330 - WARNING - Rate limited for DOGE-USD, using fallback
+2025-08-13 15:38:08,647 - WARNING - Rate limited for LTC-USD, using fallback
+2025-08-13 15:38:08,883 - INFO - 127.0.0.1 - - [13/Aug/2025 15:38:08] "GET /api/prices HTTP/1.1" 200 -
+2025-08-13 15:38:08,885 - INFO - 127.0.0.1 - - [13/Aug/2025 15:38:08] "GET /api/signals HTTP/1.1" 200 -
+2025-08-13 15:38:08,887 - INFO - 127.0.0.1 - - [13/Aug/2025 15:38:08] "[33mGET /api/refresh HTTP/1.1[0m" 404 -
+2025-08-13 15:40:17,009 - INFO - 127.0.0.1 - - [13/Aug/2025 15:40:17] "[33mGET /api/refresh HTTP/1.1[0m" 404 -
+2025-08-13 15:40:22,710 - INFO - 127.0.0.1 - - [13/Aug/2025 15:40:22] "[33mGET /api/refresh HTTP/1.1[0m" 404 -
+2025-08-13 15:40:56,188 - INFO - 127.0.0.1 - - [13/Aug/2025 15:40:56] "HEAD / HTTP/1.1" 200 -
+2025-08-13 15:43:47,346 - INFO - 🔄 Starting background data update...
+2025-08-13 15:43:47,681 - INFO - ✅ Updated BTC-USD: $120995.00 - INSUFFICIENT_DATA
+2025-08-13 15:43:51,032 - INFO - ✅ Updated ETH-USD: $4653.66 - INSUFFICIENT_DATA
+2025-08-13 15:43:54,360 - INFO - ✅ Updated ADA-USD: $0.87 - INSUFFICIENT_DATA
+2025-08-13 15:43:57,606 - INFO - ✅ Updated SOL-USD: $197.30 - INSUFFICIENT_DATA
+2025-08-13 15:44:00,827 - INFO - ✅ Updated DOGE-USD: $0.24 - INSUFFICIENT_DATA
+2025-08-13 15:44:04,071 - INFO - ✅ Updated LTC-USD: $130.39 - INSUFFICIENT_DATA
+2025-08-13 15:44:04,071 - INFO - 🎉 Background data update completed
+2025-08-13 15:51:56,224 - INFO - 🔄 Starting background data update...
+2025-08-13 15:52:48,813 - INFO - 🔄 Starting background data update...
+2025-08-13 15:52:48,820 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.0.3.55:8080
+2025-08-13 15:52:48,820 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-13 15:52:49,224 - INFO - ✅ Updated BTC-USD: $121243.00 - INSUFFICIENT_DATA
+2025-08-13 15:52:51,111 - INFO - 127.0.0.1 - - [13/Aug/2025 15:52:51] "GET / HTTP/1.1" 200 -
+2025-08-13 15:52:52,431 - INFO - ✅ Updated ETH-USD: $4658.97 - INSUFFICIENT_DATA
+2025-08-13 15:52:55,636 - INFO - ✅ Updated ADA-USD: $0.87 - INSUFFICIENT_DATA
+2025-08-13 15:52:58,868 - INFO - ✅ Updated SOL-USD: $197.59 - INSUFFICIENT_DATA
+2025-08-13 15:53:02,153 - INFO - ✅ Updated DOGE-USD: $0.24 - INSUFFICIENT_DATA
+2025-08-13 15:53:05,518 - INFO - ✅ Updated LTC-USD: $130.31 - INSUFFICIENT_DATA
+2025-08-13 15:53:05,518 - INFO - 🎉 Background data update completed
+2025-08-13 15:53:40,950 - INFO - 🔄 Starting background data update...
+2025-08-13 15:53:40,957 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.0.3.55:8080
+2025-08-13 15:53:40,957 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-13 15:53:41,213 - INFO - ✅ Updated BTC-USD: $121243.00 - INSUFFICIENT_DATA
+2025-08-13 15:53:43,225 - INFO - 127.0.0.1 - - [13/Aug/2025 15:53:43] "GET / HTTP/1.1" 200 -
+2025-08-13 15:53:44,303 - INFO - ✅ Updated ETH-USD: $4658.97 - INSUFFICIENT_DATA
+2025-08-13 15:53:47,469 - INFO - ✅ Updated ADA-USD: $0.87 - INSUFFICIENT_DATA
+2025-08-13 15:53:50,559 - WARNING - Rate limited for SOL-USD, using fallback
+2025-08-13 15:53:50,860 - INFO - ✅ Updated SOL-USD: $197.76 - INSUFFICIENT_DATA
+2025-08-13 15:53:53,949 - WARNING - Rate limited for DOGE-USD, using fallback
+2025-08-13 15:53:54,322 - INFO - ✅ Updated DOGE-USD: $0.24 - INSUFFICIENT_DATA
+2025-08-13 15:53:57,395 - WARNING - Rate limited for LTC-USD, using fallback
+2025-08-13 15:53:57,694 - INFO - ✅ Updated LTC-USD: $130.24 - INSUFFICIENT_DATA
+2025-08-13 15:53:57,694 - INFO - 🎉 Background data update completed
+2025-08-13 15:57:05,786 - INFO - 🔄 Starting background data update...
+2025-08-13 15:57:05,792 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.0.3.55:8080
+2025-08-13 15:57:05,793 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-13 15:57:06,046 - INFO - ✅ Updated BTC-USD: $121196.00 - INSUFFICIENT_DATA
+2025-08-13 15:57:08,076 - INFO - 127.0.0.1 - - [13/Aug/2025 15:57:08] "GET / HTTP/1.1" 200 -
+2025-08-13 15:57:09,285 - INFO - ✅ Updated ETH-USD: $4656.20 - INSUFFICIENT_DATA
+2025-08-13 15:57:12,495 - INFO - ✅ Updated ADA-USD: $0.87 - INSUFFICIENT_DATA
+2025-08-13 15:57:15,586 - WARNING - Rate limited for SOL-USD, using fallback
+2025-08-13 15:57:15,628 - WARNING - Rate limited for ADA-USD, using fallback
+2025-08-13 15:57:15,899 - INFO - ✅ Updated SOL-USD: $197.68 - INSUFFICIENT_DATA
+2025-08-13 15:57:17,198 - WARNING - Rate limited for DOGE-USD, using fallback
+2025-08-13 15:57:18,046 - WARNING - Rate limited for LTC-USD, using fallback
+2025-08-13 15:57:18,422 - INFO - 127.0.0.1 - - [13/Aug/2025 15:57:18] "GET /api/prices HTTP/1.1" 200 -
+2025-08-13 15:58:28,705 - INFO - 🔄 Starting background data update...
+2025-08-13 15:58:28,710 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.0.3.55:8080
+2025-08-13 15:58:28,711 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-13 15:58:29,122 - INFO - ✅ Updated BTC-USD: $121156.00 - INSUFFICIENT_DATA
+2025-08-13 15:58:31,339 - INFO - 127.0.0.1 - - [13/Aug/2025 15:58:31] "GET / HTTP/1.1" 200 -
+2025-08-13 15:58:32,352 - INFO - ✅ Updated ETH-USD: $4656.86 - INSUFFICIENT_DATA
+2025-08-13 15:58:35,583 - INFO - ✅ Updated ADA-USD: $0.87 - INSUFFICIENT_DATA
+2025-08-13 15:58:37,871 - WARNING - Rate limited for ETH-USD, using fallback
+2025-08-13 15:58:38,655 - WARNING - Rate limited for SOL-USD, using fallback
+2025-08-13 15:58:38,737 - WARNING - Rate limited for ADA-USD, using fallback
+2025-08-13 15:58:38,995 - INFO - ✅ Updated SOL-USD: $197.40 - INSUFFICIENT_DATA
+2025-08-13 15:58:40,347 - WARNING - Rate limited for DOGE-USD, using fallback
+2025-08-13 15:58:41,270 - WARNING - Rate limited for LTC-USD, using fallback
+2025-08-13 15:58:41,627 - INFO - 127.0.0.1 - - [13/Aug/2025 15:58:41] "GET /api/prices HTTP/1.1" 200 -
+2025-08-13 15:59:47,579 - INFO - 🔄 Starting background data update...
+2025-08-13 15:59:47,584 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.0.3.55:8080
+2025-08-13 15:59:47,585 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-13 15:59:47,948 - INFO - ✅ Updated BTC-USD: $121128.00 - INSUFFICIENT_DATA
+2025-08-13 15:59:51,225 - INFO - ✅ Updated ETH-USD: $4657.34 - INSUFFICIENT_DATA
+2025-08-13 15:59:54,460 - INFO - ✅ Updated ADA-USD: $0.87 - INSUFFICIENT_DATA
+2025-08-13 15:59:57,243 - WARNING - Rate limited for ADA-USD, using fallback
+2025-08-13 15:59:57,587 - WARNING - Rate limited for SOL-USD, using fallback
+2025-08-13 15:59:57,899 - INFO - ✅ Updated SOL-USD: $197.31 - INSUFFICIENT_DATA
+2025-08-13 15:59:58,879 - WARNING - Rate limited for DOGE-USD, using fallback
+2025-08-13 15:59:59,734 - WARNING - Rate limited for LTC-USD, using fallback
+2025-08-13 16:00:00,051 - INFO - 127.0.0.1 - - [13/Aug/2025 16:00:00] "GET /api/prices HTTP/1.1" 200 -
