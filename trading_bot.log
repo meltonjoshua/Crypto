@@ -1,0 +1,117 @@
+2025-08-13 13:47:22,618 - __main__ - INFO - Configuration loaded from config/config.json
+2025-08-13 13:47:22,684 - database - INFO - Database initialized successfully
+2025-08-13 13:47:22,684 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 13:48:28,642 - __main__ - INFO - Configuration loaded from config/config.json
+2025-08-13 13:48:28,643 - database - INFO - Database initialized successfully
+2025-08-13 13:48:28,643 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 13:48:28,643 - __main__ - INFO - Starting crypto trading bot monitoring...
+2025-08-13 13:48:28,644 - __main__ - INFO - Updating market data for BTC-USD
+2025-08-13 13:48:29,090 - coinbase_client - ERROR - Error getting candles for BTC-USD: 400 Client Error: Bad Request for url: https://api-public.sandbox.exchange.coinbase.com/products/BTC-USD/candles?granularity=3600&start=2025-07-14T13%3A48%3A28.644162&end=2025-08-13T13%3A48%3A28.644162
+2025-08-13 13:48:29,096 - __main__ - WARNING - No data received for BTC-USD
+2025-08-13 13:48:29,096 - __main__ - INFO - Updating market data for ETH-USD
+2025-08-13 13:48:29,511 - coinbase_client - ERROR - Error getting candles for ETH-USD: 404 Client Error: Not Found for url: https://api-public.sandbox.exchange.coinbase.com/products/ETH-USD/candles?granularity=3600&start=2025-07-14T13%3A48%3A29.097505&end=2025-08-13T13%3A48%3A29.097505
+2025-08-13 13:48:29,512 - __main__ - WARNING - No data received for ETH-USD
+2025-08-13 13:48:29,513 - __main__ - INFO - Updating market data for ADA-USD
+2025-08-13 13:48:29,945 - coinbase_client - ERROR - Error getting candles for ADA-USD: 404 Client Error: Not Found for url: https://api-public.sandbox.exchange.coinbase.com/products/ADA-USD/candles?granularity=3600&start=2025-07-14T13%3A48%3A29.515670&end=2025-08-13T13%3A48%3A29.515670
+2025-08-13 13:48:29,946 - __main__ - WARNING - No data received for ADA-USD
+2025-08-13 13:48:29,946 - __main__ - INFO - Updating market data for SOL-USD
+2025-08-13 13:48:30,309 - coinbase_client - ERROR - Error getting candles for SOL-USD: 404 Client Error: Not Found for url: https://api-public.sandbox.exchange.coinbase.com/products/SOL-USD/candles?granularity=3600&start=2025-07-14T13%3A48%3A29.946677&end=2025-08-13T13%3A48%3A29.946677
+2025-08-13 13:48:30,309 - __main__ - WARNING - No data received for SOL-USD
+2025-08-13 13:48:39,940 - __main__ - INFO - Received interrupt signal, stopping...
+2025-08-13 13:53:06,957 - __main__ - INFO - Configuration loaded from config/config.json
+2025-08-13 13:53:06,958 - database - INFO - Database initialized successfully
+2025-08-13 13:53:06,958 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 13:55:05,888 - __main__ - INFO - Configuration loaded from config/config.json
+2025-08-13 13:55:05,889 - database - INFO - Database initialized successfully
+2025-08-13 13:55:05,889 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 13:56:11,452 - __main__ - INFO - Configuration loaded from config/config.json
+2025-08-13 13:56:11,453 - database - INFO - Database initialized successfully
+2025-08-13 13:56:11,453 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 13:56:11,841 - database - ERROR - Error storing price data for BTC-USD: Invalid parameter `method`: replace
+2025-08-13 13:56:26,427 - __main__ - INFO - Configuration loaded from config/config.json
+2025-08-13 13:56:26,428 - database - INFO - Database initialized successfully
+2025-08-13 13:56:26,428 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 13:56:26,620 - database - INFO - Stored 168 price records for BTC-USD
+2025-08-13 13:56:26,833 - database - INFO - Stored 168 price records for ETH-USD
+2025-08-13 13:56:27,043 - database - INFO - Stored 168 price records for ADA-USD
+2025-08-13 13:56:27,585 - database - INFO - Stored 168 price records for SOL-USD
+2025-08-13 14:05:37,295 - root - ERROR - Configuration validation error: Missing required configuration section: analysis
+2025-08-13 14:06:34,748 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 14:06:34,749 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 14:06:34,749 - database - ERROR - Unexpected error initializing database: 'DatabaseManager' object has no attribute 'init_tables'
+2025-08-13 14:07:13,568 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 14:07:13,569 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 14:07:13,569 - database - INFO - Database initialized successfully
+2025-08-13 14:07:13,570 - database - INFO - Database initialized successfully
+2025-08-13 14:07:13,570 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 14:15:38,093 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 14:15:38,094 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 14:15:38,094 - database - INFO - Database initialized successfully
+2025-08-13 14:15:38,095 - database - INFO - Database initialized successfully
+2025-08-13 14:15:38,095 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 14:20:04,342 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 14:20:04,343 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 14:20:04,344 - database - INFO - Database initialized successfully
+2025-08-13 14:20:04,344 - database - INFO - Database initialized successfully
+2025-08-13 14:20:04,344 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 14:24:21,308 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 14:24:21,309 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 14:24:21,309 - database - INFO - Database initialized successfully
+2025-08-13 14:24:21,310 - database - INFO - Database initialized successfully
+2025-08-13 14:24:21,310 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 14:24:49,873 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 14:24:49,874 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 14:24:49,875 - database - INFO - Database initialized successfully
+2025-08-13 14:24:49,876 - database - INFO - Database initialized successfully
+2025-08-13 14:24:49,876 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 14:30:38,227 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 14:30:38,228 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 14:30:38,228 - database - INFO - Database initialized successfully
+2025-08-13 14:30:38,229 - database - INFO - Database initialized successfully
+2025-08-13 14:30:38,229 - main - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 14:31:43,669 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 14:31:43,670 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 14:31:43,670 - database - INFO - Database initialized successfully
+2025-08-13 14:31:43,671 - database - INFO - Database initialized successfully
+2025-08-13 14:31:43,671 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 14:31:43,916 - database - ERROR - Error storing price data for BTC-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:31:43,943 - __main__ - ERROR - Analysis error for BTC-USD: unsupported format string passed to Series.__format__
+2025-08-13 14:31:44,104 - database - ERROR - Error storing price data for ETH-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:31:44,136 - __main__ - ERROR - Analysis error for ETH-USD: unsupported format string passed to Series.__format__
+2025-08-13 14:31:44,283 - database - ERROR - Error storing price data for ADA-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:31:44,307 - __main__ - ERROR - Analysis error for ADA-USD: unsupported format string passed to Series.__format__
+2025-08-13 14:31:44,451 - database - ERROR - Error storing price data for SOL-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:31:44,488 - __main__ - ERROR - Analysis error for SOL-USD: unsupported format string passed to Series.__format__
+2025-08-13 14:32:07,589 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 14:32:07,590 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 14:32:07,590 - database - INFO - Database initialized successfully
+2025-08-13 14:32:07,591 - database - INFO - Database initialized successfully
+2025-08-13 14:32:07,591 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 14:32:07,988 - database - ERROR - Error storing price data for BTC-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:32:08,299 - database - ERROR - Error storing price data for ETH-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:32:08,480 - database - ERROR - Error storing price data for ADA-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:32:08,879 - database - ERROR - Error storing price data for SOL-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:33:01,925 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 14:33:01,926 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 14:33:01,926 - database - INFO - Database initialized successfully
+2025-08-13 14:33:01,927 - database - INFO - Database initialized successfully
+2025-08-13 14:33:01,927 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 14:33:02,103 - database - ERROR - Error storing price data for BTC-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:33:02,316 - database - ERROR - Error storing price data for ETH-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:33:02,570 - database - ERROR - Error storing price data for ADA-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:33:02,869 - database - ERROR - Error storing price data for SOL-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 14:34:34,855 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 14:34:34,855 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 14:34:34,856 - database - INFO - Database initialized successfully
+2025-08-13 14:34:34,856 - database - INFO - Database initialized successfully
+2025-08-13 14:34:34,857 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 14:34:35,046 - database - ERROR - Error storing price data for BTC-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 15:06:01,731 - root - INFO - Configuration loaded successfully from config/config.json
+2025-08-13 15:06:01,737 - database - INFO - Database connection established: data/trading_data.db
+2025-08-13 15:06:01,739 - database - INFO - Database initialized successfully
+2025-08-13 15:06:01,742 - database - INFO - Database initialized successfully
+2025-08-13 15:06:01,744 - __main__ - INFO - Crypto Trading Bot initialized successfully
+2025-08-13 15:06:02,165 - database - ERROR - Error storing price data for BTC-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 15:06:02,440 - database - ERROR - Error storing price data for ETH-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 15:06:02,758 - database - ERROR - Error storing price data for ADA-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp
+2025-08-13 15:06:03,306 - database - ERROR - Error storing price data for SOL-USD: UNIQUE constraint failed: price_data.symbol, price_data.timestamp

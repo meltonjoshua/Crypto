@@ -1,0 +1,57 @@
+{
+  "trading_pairs": ["BTC-USD", "ETH-USD", "ADA-USD", "SOL-USD"],
+  "analysis": {
+    "min_data_points": 50,
+    "confidence_threshold": 0.6,
+    "signal_strength": {
+      "buy_threshold": 2,
+      "sell_threshold": -2
+    }
+  },
+  "technical_indicators": {
+    "rsi": {
+      "period": 14,
+      "overbought": 70,
+      "oversold": 30
+    },
+    "macd": {
+      "fast_period": 12,
+      "slow_period": 26,
+      "signal_period": 9
+    },
+    "moving_averages": {
+      "short_period": 20,
+      "long_period": 50
+    },
+    "bollinger_bands": {
+      "period": 20,
+      "std_dev": 2
+    }
+  },
+  "risk_management": {
+    "stop_loss_percentage": 5.0,
+    "take_profit_percentage": 10.0,
+    "max_position_size": 1000.0
+  },
+  "alerts": {
+    "email_enabled": false,
+    "email_smtp_server": "smtp.gmail.com",
+    "email_port": 587,
+    "email_username": "your_email@gmail.com",
+    "email_password": "your_app_password",
+    "email_recipients": ["your_email@gmail.com"],
+    "console_alerts": true
+  },
+  "data_collection": {
+    "candle_interval": "1m",
+    "history_days": 30,
+    "update_frequency_seconds": 60
+  },
+  "coinbase": {
+    "api_url": "https://api.exchange.coinbase.com",
+    "sandbox": false,
+    "api_key": "",
+    "api_secret": "",
+    "passphrase": ""
+  }
+}
