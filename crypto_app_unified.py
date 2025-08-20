@@ -1103,6 +1103,42 @@ class TechnicalAnalysis:
             signals.append("Multi-timeframe bearish confluence")
             confidence_factors.append(0.8)
         
+        # 16. ML-Based Pattern Recognition Analysis
+        try:
+            patterns = MLSignalEnhancer.detect_chart_patterns(df)
+            if patterns['patterns']:
+                pattern_strength = MLSignalEnhancer.calculate_pattern_signal_strength(patterns['patterns'])
+                
+                if abs(pattern_strength) > 0.3:  # Significant pattern detected
+                    pattern_score = int(pattern_strength * 4)  # Scale to +/- 4 points
+                    score += pattern_score
+                    
+                    pattern_names = [p['name'] for p in patterns['patterns']]
+                    if pattern_strength > 0:
+                        signals.append(f"Bullish patterns detected: {', '.join(pattern_names[:2])}")
+                    else:
+                        signals.append(f"Bearish patterns detected: {', '.join(pattern_names[:2])}")
+                    
+                    confidence_factors.append(patterns['overall_confidence'])
+        
+            # Volume Pattern Analysis
+            volume_analysis = MLSignalEnhancer.analyze_volume_patterns(df)
+            if volume_analysis['volume_trend'] == 'bullish_confirmation':
+                score += 1
+                signals.append("Volume confirms bullish trend")
+                confidence_factors.append(volume_analysis['strength'])
+            elif volume_analysis['volume_trend'] == 'bearish_divergence':
+                score -= 1
+                signals.append("Volume shows bearish divergence")
+                confidence_factors.append(volume_analysis['strength'])
+            elif volume_analysis['volume_trend'] == 'low_conviction':
+                score *= 0.8  # Reduce signal strength on low volume
+                signals.append("Low volume indicates weak conviction")
+                confidence_factors.append(0.3)
+                
+        except Exception as e:
+            logging.warning(f"ML pattern analysis failed: {e}")
+        
         # Calculate enhanced confidence score
         if confidence_factors:
             avg_confidence = sum(confidence_factors) / len(confidence_factors)
@@ -1110,21 +1146,21 @@ class TechnicalAnalysis:
             avg_confidence = 0.5
         
         # Generate recommendation with enhanced accuracy
-        max_score = 25  # Increased max score due to advanced indicators
+        max_score = 30  # Increased max score due to ML patterns
         normalized_score = score / max_score
         
-        if score >= 12:
+        if score >= 15:
             recommendation = "STRONG BUY"
-            confidence = min(avg_confidence * 1.3, 1.0)
-        elif score >= 6:
+            confidence = min(avg_confidence * 1.4, 1.0)
+        elif score >= 8:
             recommendation = "BUY"
-            confidence = min(avg_confidence * 1.1, 1.0)
-        elif score <= -12:
+            confidence = min(avg_confidence * 1.2, 1.0)
+        elif score <= -15:
             recommendation = "STRONG SELL"
-            confidence = min(avg_confidence * 1.3, 1.0)
-        elif score <= -6:
+            confidence = min(avg_confidence * 1.4, 1.0)
+        elif score <= -8:
             recommendation = "SELL"
-            confidence = min(avg_confidence * 1.1, 1.0)
+            confidence = min(avg_confidence * 1.2, 1.0)
         else:
             recommendation = "HOLD"
             confidence = avg_confidence * 0.9
@@ -1174,8 +1210,489 @@ class TechnicalAnalysis:
                 'ichimoku_senkou_a': latest_senkou_a,
                 'ichimoku_senkou_b': latest_senkou_b,
                 'fib_levels': fib_levels,
-                'market_structure': market_structure
+                'market_structure': market_structure,
+                # ML Pattern Analysis
+                'ml_patterns': patterns if 'patterns' in locals() else {'patterns': [], 'pattern_count': 0},
+                'volume_analysis': volume_analysis if 'volume_analysis' in locals() else {'volume_trend': 'unknown', 'strength': 0}
             }
+        }
+
+# ==================== MACHINE LEARNING SIGNAL ENHANCEMENT ====================
+
+class MLSignalEnhancer:
+    """Machine learning-based signal enhancement and pattern recognition"""
+    
+    def __init__(self):
+        self.pattern_cache = {}
+        self.signal_history = []
+        
+    @staticmethod
+    def detect_chart_patterns(df: pd.DataFrame) -> Dict:
+        """Detect common chart patterns using basic pattern recognition"""
+        if len(df) < 20:
+            return {'patterns': [], 'confidence': 0}
+        
+        high = df['High'] if 'High' in df.columns else df['Close']
+        low = df['Low'] if 'Low' in df.columns else df['Close']
+        close = df['Close'] if 'Close' in df.columns else df['close_price']
+        
+        patterns = []
+        
+        # Head and Shoulders Pattern Detection
+        h_s_pattern = MLSignalEnhancer._detect_head_shoulders(high, low)
+        if h_s_pattern['detected']:
+            patterns.append({
+                'name': 'Head and Shoulders',
+                'type': 'bearish',
+                'confidence': h_s_pattern['confidence'],
+                'strength': 0.8
+            })
+        
+        # Double Top/Bottom Detection
+        double_pattern = MLSignalEnhancer._detect_double_top_bottom(high, low)
+        if double_pattern['detected']:
+            patterns.append({
+                'name': f"Double {double_pattern['type']}",
+                'type': 'bearish' if double_pattern['type'] == 'Top' else 'bullish',
+                'confidence': double_pattern['confidence'],
+                'strength': 0.7
+            })
+        
+        # Triangle Pattern Detection
+        triangle_pattern = MLSignalEnhancer._detect_triangle(high, low)
+        if triangle_pattern['detected']:
+            patterns.append({
+                'name': f"{triangle_pattern['type']} Triangle",
+                'type': triangle_pattern['direction'],
+                'confidence': triangle_pattern['confidence'],
+                'strength': 0.6
+            })
+        
+        # Flag/Pennant Pattern Detection
+        flag_pattern = MLSignalEnhancer._detect_flag_pennant(close, high, low)
+        if flag_pattern['detected']:
+            patterns.append({
+                'name': flag_pattern['type'],
+                'type': flag_pattern['direction'],
+                'confidence': flag_pattern['confidence'],
+                'strength': 0.6
+            })
+        
+        return {
+            'patterns': patterns,
+            'pattern_count': len(patterns),
+            'overall_confidence': sum(p['confidence'] for p in patterns) / max(len(patterns), 1)
+        }
+    
+    @staticmethod
+    def _detect_head_shoulders(high: pd.Series, low: pd.Series, window: int = 10) -> Dict:
+        """Detect Head and Shoulders pattern"""
+        if len(high) < window * 3:
+            return {'detected': False, 'confidence': 0}
+        
+        # Find local maxima
+        highs = high.rolling(window, center=True).max() == high
+        peaks = high[highs].tail(5)  # Last 5 peaks
+        
+        if len(peaks) < 3:
+            return {'detected': False, 'confidence': 0}
+        
+        # Check if middle peak is highest (head) and side peaks are similar (shoulders)
+        peak_values = peaks.values[-3:]  # Last 3 peaks
+        head = peak_values[1]  # Middle peak
+        left_shoulder = peak_values[0]
+        right_shoulder = peak_values[2]
+        
+        # Head should be higher than shoulders
+        if head > left_shoulder and head > right_shoulder:
+            # Shoulders should be relatively similar
+            shoulder_diff = abs(left_shoulder - right_shoulder) / head
+            if shoulder_diff < 0.05:  # Within 5%
+                confidence = 1 - shoulder_diff
+                return {'detected': True, 'confidence': confidence}
+        
+        return {'detected': False, 'confidence': 0}
+    
+    @staticmethod
+    def _detect_double_top_bottom(high: pd.Series, low: pd.Series, window: int = 10) -> Dict:
+        """Detect Double Top/Bottom patterns"""
+        if len(high) < window * 2:
+            return {'detected': False, 'confidence': 0}
+        
+        # Double Top Detection
+        highs = high.rolling(window, center=True).max() == high
+        peaks = high[highs].tail(4)
+        
+        if len(peaks) >= 2:
+            last_two_peaks = peaks.values[-2:]
+            peak_diff = abs(last_two_peaks[0] - last_two_peaks[1]) / max(last_two_peaks)
+            
+            if peak_diff < 0.03:  # Within 3%
+                return {
+                    'detected': True,
+                    'type': 'Top',
+                    'confidence': 1 - peak_diff
+                }
+        
+        # Double Bottom Detection
+        lows = low.rolling(window, center=True).min() == low
+        troughs = low[lows].tail(4)
+        
+        if len(troughs) >= 2:
+            last_two_troughs = troughs.values[-2:]
+            trough_diff = abs(last_two_troughs[0] - last_two_troughs[1]) / max(last_two_troughs)
+            
+            if trough_diff < 0.03:  # Within 3%
+                return {
+                    'detected': True,
+                    'type': 'Bottom',
+                    'confidence': 1 - trough_diff
+                }
+        
+        return {'detected': False, 'confidence': 0}
+    
+    @staticmethod
+    def _detect_triangle(high: pd.Series, low: pd.Series, window: int = 20) -> Dict:
+        """Detect Triangle patterns (Ascending, Descending, Symmetrical)"""
+        if len(high) < window:
+            return {'detected': False, 'confidence': 0}
+        
+        recent_high = high.tail(window)
+        recent_low = low.tail(window)
+        
+        # Calculate trend lines using linear regression
+        x = np.arange(len(recent_high))
+        
+        # High trend slope
+        high_slope = np.polyfit(x, recent_high.values, 1)[0]
+        low_slope = np.polyfit(x, recent_low.values, 1)[0]
+        
+        # Determine triangle type
+        if abs(high_slope) < 0.01 and low_slope > 0.01:  # Flat highs, rising lows
+            return {
+                'detected': True,
+                'type': 'Ascending',
+                'direction': 'bullish',
+                'confidence': min(abs(low_slope) * 100, 0.8)
+            }
+        elif high_slope < -0.01 and abs(low_slope) < 0.01:  # Falling highs, flat lows
+            return {
+                'detected': True,
+                'type': 'Descending',
+                'direction': 'bearish',
+                'confidence': min(abs(high_slope) * 100, 0.8)
+            }
+        elif high_slope < -0.01 and low_slope > 0.01:  # Converging lines
+            return {
+                'detected': True,
+                'type': 'Symmetrical',
+                'direction': 'neutral',
+                'confidence': min((abs(high_slope) + abs(low_slope)) * 50, 0.7)
+            }
+        
+        return {'detected': False, 'confidence': 0}
+    
+    @staticmethod
+    def _detect_flag_pennant(close: pd.Series, high: pd.Series, low: pd.Series, window: int = 15) -> Dict:
+        """Detect Flag and Pennant patterns"""
+        if len(close) < window * 2:
+            return {'detected': False, 'confidence': 0}
+        
+        # Look for strong move followed by consolidation
+        recent_data = close.tail(window * 2)
+        first_half = recent_data.head(window)
+        second_half = recent_data.tail(window)
+        
+        # Check for strong initial move
+        initial_move = (first_half.iloc[-1] - first_half.iloc[0]) / first_half.iloc[0]
+        
+        if abs(initial_move) > 0.05:  # 5% move
+            # Check for consolidation in second half
+            consolidation_range = (second_half.max() - second_half.min()) / second_half.mean()
+            
+            if consolidation_range < 0.03:  # Tight consolidation
+                pattern_type = "Bull Flag" if initial_move > 0 else "Bear Flag"
+                direction = "bullish" if initial_move > 0 else "bearish"
+                
+                return {
+                    'detected': True,
+                    'type': pattern_type,
+                    'direction': direction,
+                    'confidence': min(abs(initial_move) * 10, 0.8)
+                }
+        
+        return {'detected': False, 'confidence': 0}
+    
+    @staticmethod
+    def calculate_pattern_signal_strength(patterns: List[Dict]) -> float:
+        """Calculate overall signal strength from detected patterns"""
+        if not patterns:
+            return 0
+        
+        bullish_strength = 0
+        bearish_strength = 0
+        
+        for pattern in patterns:
+            strength = pattern['confidence'] * pattern['strength']
+            
+            if pattern['type'] == 'bullish':
+                bullish_strength += strength
+            elif pattern['type'] == 'bearish':
+                bearish_strength += strength
+        
+        # Return net signal strength (-1 to 1)
+        total_strength = bullish_strength + bearish_strength
+        if total_strength == 0:
+            return 0
+        
+        return (bullish_strength - bearish_strength) / total_strength
+    
+    @staticmethod
+    def analyze_volume_patterns(df: pd.DataFrame) -> Dict:
+        """Analyze volume patterns for signal confirmation"""
+        if len(df) < 20:
+            return {'volume_trend': 'insufficient_data', 'strength': 0}
+        
+        volume = df['Volume'] if 'Volume' in df.columns else df['volume'] if 'volume' in df.columns else pd.Series([1] * len(df))
+        close = df['Close'] if 'Close' in df.columns else df['close_price']
+        
+        # Volume trend analysis
+        recent_volume = volume.tail(10)
+        avg_volume = volume.tail(50).mean()
+        
+        volume_ratio = recent_volume.mean() / avg_volume
+        
+        # Price-volume relationship
+        price_changes = close.pct_change().tail(10)
+        volume_changes = volume.pct_change().tail(10)
+        
+        # Calculate correlation between price and volume changes
+        correlation = price_changes.corr(volume_changes)
+        
+        if volume_ratio > 1.5 and correlation > 0.3:
+            return {
+                'volume_trend': 'bullish_confirmation',
+                'strength': min(volume_ratio / 2, 1.0),
+                'correlation': correlation
+            }
+        elif volume_ratio > 1.5 and correlation < -0.3:
+            return {
+                'volume_trend': 'bearish_divergence',
+                'strength': min(volume_ratio / 2, 1.0),
+                'correlation': correlation
+            }
+        elif volume_ratio < 0.7:
+            return {
+                'volume_trend': 'low_conviction',
+                'strength': 0.3,
+                'correlation': correlation
+            }
+        else:
+            return {
+                'volume_trend': 'neutral',
+                'strength': 0.5,
+                'correlation': correlation
+            }
+
+# ==================== ADVANCED RISK MANAGEMENT ====================
+
+class AdvancedRiskManager:
+    """Advanced risk management with dynamic position sizing and portfolio analysis"""
+    
+    def __init__(self, config: Dict = None):
+        self.config = config or {
+            'max_portfolio_risk': 0.02,  # 2% max portfolio risk per trade
+            'max_position_size': 0.1,     # 10% max position size
+            'stop_loss_atr_multiplier': 2.0,
+            'take_profit_risk_reward': 2.0,
+            'correlation_threshold': 0.7
+        }
+        
+    def calculate_dynamic_position_size(self, signal_data: Dict, account_balance: float, 
+                                      current_price: float) -> Dict:
+        """Calculate optimal position size based on signal strength and risk parameters"""
+        try:
+            # Base risk amount
+            base_risk = account_balance * self.config['max_portfolio_risk']
+            
+            # Adjust risk based on signal confidence
+            confidence = signal_data.get('confidence', 0.5)
+            accuracy_score = signal_data.get('accuracy_score', 0.5)
+            
+            # Risk adjustment factor based on signal quality
+            signal_quality = (confidence + accuracy_score) / 2
+            adjusted_risk = base_risk * signal_quality
+            
+            # Calculate stop loss distance using ATR
+            indicators = signal_data.get('indicators', {})
+            atr = indicators.get('atr', current_price * 0.02)  # Default to 2% if no ATR
+            
+            stop_loss_distance = atr * self.config['stop_loss_atr_multiplier']
+            stop_loss_price = current_price - stop_loss_distance
+            
+            # Position size based on risk and stop loss
+            position_size_by_risk = adjusted_risk / stop_loss_distance
+            
+            # Position size based on max position percentage
+            max_position_value = account_balance * self.config['max_position_size']
+            position_size_by_max = max_position_value / current_price
+            
+            # Use the smaller of the two
+            position_size = min(position_size_by_risk, position_size_by_max)
+            
+            # Calculate take profit
+            take_profit_distance = stop_loss_distance * self.config['take_profit_risk_reward']
+            take_profit_price = current_price + take_profit_distance
+            
+            return {
+                'position_size': position_size,
+                'position_value': position_size * current_price,
+                'risk_amount': position_size * stop_loss_distance,
+                'risk_percentage': (position_size * stop_loss_distance) / account_balance,
+                'stop_loss_price': stop_loss_price,
+                'take_profit_price': take_profit_price,
+                'risk_reward_ratio': self.config['take_profit_risk_reward'],
+                'signal_quality': signal_quality,
+                'recommended': True
+            }
+            
+        except Exception as e:
+            logging.error(f"Error calculating position size: {e}")
+            return {
+                'position_size': 0,
+                'position_value': 0,
+                'risk_amount': 0,
+                'risk_percentage': 0,
+                'stop_loss_price': current_price,
+                'take_profit_price': current_price,
+                'risk_reward_ratio': 1.0,
+                'signal_quality': 0,
+                'recommended': False,
+                'error': str(e)
+            }
+    
+    def assess_portfolio_risk(self, current_positions: List[Dict], 
+                            new_signal: Dict, symbol: str) -> Dict:
+        """Assess overall portfolio risk with new position"""
+        try:
+            # Calculate current portfolio exposure
+            total_exposure = sum(pos.get('position_value', 0) for pos in current_positions)
+            total_risk = sum(pos.get('risk_amount', 0) for pos in current_positions)
+            
+            # Check symbol concentration
+            symbol_exposure = sum(pos.get('position_value', 0) 
+                                for pos in current_positions 
+                                if pos.get('symbol') == symbol)
+            
+            # Check for correlated assets
+            correlated_symbols = self._get_correlated_symbols(symbol)
+            correlated_exposure = sum(pos.get('position_value', 0) 
+                                    for pos in current_positions 
+                                    if pos.get('symbol') in correlated_symbols)
+            
+            # Risk assessment
+            risk_warnings = []
+            risk_score = 0
+            
+            if total_risk > 0.1:  # More than 10% total portfolio risk
+                risk_warnings.append("High total portfolio risk")
+                risk_score += 3
+                
+            if symbol_exposure > 0.2:  # More than 20% in same symbol
+                risk_warnings.append(f"High concentration in {symbol}")
+                risk_score += 2
+                
+            if correlated_exposure > 0.3:  # More than 30% in correlated assets
+                risk_warnings.append("High correlation risk")
+                risk_score += 2
+            
+            # Signal quality assessment
+            signal_quality = new_signal.get('accuracy_score', 0.5)
+            if signal_quality < 0.4:
+                risk_warnings.append("Low signal quality")
+                risk_score += 1
+            
+            # Overall risk level
+            if risk_score >= 5:
+                risk_level = "HIGH"
+                recommended = False
+            elif risk_score >= 3:
+                risk_level = "MEDIUM"
+                recommended = True  # But with caution
+            else:
+                risk_level = "LOW"
+                recommended = True
+            
+            return {
+                'risk_level': risk_level,
+                'risk_score': risk_score,
+                'total_portfolio_risk': total_risk,
+                'symbol_concentration': symbol_exposure,
+                'correlation_risk': correlated_exposure,
+                'risk_warnings': risk_warnings,
+                'recommended': recommended,
+                'max_additional_risk': max(0, 0.1 - total_risk)  # Keep under 10% total risk
+            }
+            
+        except Exception as e:
+            logging.error(f"Error assessing portfolio risk: {e}")
+            return {
+                'risk_level': "UNKNOWN",
+                'risk_score': 0,
+                'total_portfolio_risk': 0,
+                'recommended': False,
+                'error': str(e)
+            }
+    
+    def _get_correlated_symbols(self, symbol: str) -> List[str]:
+        """Get symbols that are typically correlated with the given symbol"""
+        correlation_groups = {
+            'BTC-USD': ['ETH-USD'],
+            'ETH-USD': ['BTC-USD', 'ADA-USD'],
+            'ADA-USD': ['ETH-USD', 'SOL-USD'],
+            'SOL-USD': ['ADA-USD', 'ETH-USD'],
+            'DOGE-USD': ['LTC-USD'],
+            'LTC-USD': ['DOGE-USD', 'BTC-USD']
+        }
+        return correlation_groups.get(symbol, [])
+    
+    def generate_risk_report(self, signal_data: Dict, position_sizing: Dict, 
+                           portfolio_risk: Dict) -> Dict:
+        """Generate comprehensive risk report"""
+        
+        # Overall risk score (0-100)
+        signal_score = signal_data.get('accuracy_score', 0.5) * 100
+        portfolio_score = max(0, 100 - (portfolio_risk['risk_score'] * 10))
+        position_score = min(100, position_sizing['signal_quality'] * 100)
+        
+        overall_score = (signal_score + portfolio_score + position_score) / 3
+        
+        # Risk recommendations
+        recommendations = []
+        
+        if overall_score >= 80:
+            recommendations.append("Excellent opportunity with low risk")
+        elif overall_score >= 60:
+            recommendations.append("Good opportunity with moderate risk")
+        elif overall_score >= 40:
+            recommendations.append("Fair opportunity with higher risk")
+        else:
+            recommendations.append("High risk - consider avoiding")
+        
+        if position_sizing['risk_percentage'] > 0.03:
+            recommendations.append("Consider reducing position size")
+            
+        if len(portfolio_risk['risk_warnings']) > 0:
+            recommendations.extend(portfolio_risk['risk_warnings'])
+        
+        return {
+            'overall_risk_score': overall_score,
+            'signal_quality_score': signal_score,
+            'portfolio_risk_score': portfolio_score,
+            'position_risk_score': position_score,
+            'recommendations': recommendations,
+            'trade_recommended': overall_score >= 50 and portfolio_risk['recommended'],
+            'risk_level': 'LOW' if overall_score >= 70 else 'MEDIUM' if overall_score >= 40 else 'HIGH'
         }
 
 # ==================== PORTFOLIO MANAGER ====================
