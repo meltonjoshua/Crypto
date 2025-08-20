@@ -258,11 +258,13 @@ class DatabaseManager:
 # ==================== CRYPTO DATA FETCHER ====================
 
 class CryptoDataFetcher:
-    """Fetch cryptocurrency data from multiple sources"""
+    """Enhanced crypto data fetcher with multiple sources and advanced fallback system"""
     
-    # Rate limiting - track last request times
+    # Rate limiting and caching
     _last_request_times = {}
-    _min_request_interval = 2  # seconds between requests
+    _min_request_interval = 1.5  # seconds between requests (faster updates)
+    _data_cache = {}  # Enhanced data cache
+    _source_performance = {}  # Track source reliability
     
     @staticmethod
     def _should_make_request(symbol: str) -> bool:
@@ -279,62 +281,181 @@ class CryptoDataFetcher:
         CryptoDataFetcher._last_request_times[symbol] = time.time()
     
     @staticmethod
+    def _cache_data(symbol: str, data: Dict, source: str):
+        """Cache data with source tracking for reliability analysis"""
+        CryptoDataFetcher._data_cache[symbol] = {
+            'data': data,
+            'timestamp': time.time(),
+            'source': source
+        }
+        
+        # Track source performance
+        if source not in CryptoDataFetcher._source_performance:
+            CryptoDataFetcher._source_performance[source] = {'success': 0, 'total': 0}
+        CryptoDataFetcher._source_performance[source]['success'] += 1
+        CryptoDataFetcher._source_performance[source]['total'] += 1
+    
+    @staticmethod
+    def _get_cached_data(symbol: str, max_age: int = 300) -> Optional[Dict]:
+        """Get cached data if available and not too old"""
+        cached = CryptoDataFetcher._data_cache.get(symbol)
+        if cached and time.time() - cached['timestamp'] < max_age:
+            cached_data = cached['data'].copy()
+            cached_data['source'] = f"{cached['source']}_cached"
+            return cached_data
+        return None
+    
+    @staticmethod
+    def _track_source_failure(source: str):
+        """Track source failure for reliability analysis"""
+        if source not in CryptoDataFetcher._source_performance:
+            CryptoDataFetcher._source_performance[source] = {'success': 0, 'total': 0}
+        CryptoDataFetcher._source_performance[source]['total'] += 1
+    
+    @staticmethod
     def get_realtime_price(symbol: str) -> Dict:
-        """Get real-time price from CoinGecko API with rate limiting"""
+        """Get real-time price with intelligent multi-source fallback"""
+        # Check rate limiting first
+        if not CryptoDataFetcher._should_make_request(symbol):
+            cached = CryptoDataFetcher._get_cached_data(symbol)
+            if cached:
+                return cached
+            
+        # Try multiple data sources in order of reliability
+        sources = [
+            ('coingecko', CryptoDataFetcher._get_coingecko_price),
+            ('coinbase', CryptoDataFetcher._get_coinbase_price),
+            ('binance', CryptoDataFetcher._get_binance_price),
+            ('yfinance', CryptoDataFetcher._get_fallback_price)
+        ]
+        
+        # Sort sources by historical performance
+        def get_reliability(source_name):
+            perf = CryptoDataFetcher._source_performance.get(source_name, {'success': 1, 'total': 1})
+            return perf['success'] / max(perf['total'], 1)
+        
+        sources.sort(key=lambda x: get_reliability(x[0]), reverse=True)
+        
+        for source_name, source_func in sources:
+            try:
+                data = source_func(symbol)
+                if data and data.get('price', 0) > 0:
+                    CryptoDataFetcher._cache_data(symbol, data, source_name)
+                    CryptoDataFetcher._update_request_time(symbol)
+                    return data
+            except Exception as e:
+                CryptoDataFetcher._track_source_failure(source_name)
+                logging.warning(f"Source {source_name} failed for {symbol}: {e}")
+                continue
+        
+        # Last resort - return old cached data if available
+        cached = CryptoDataFetcher._get_cached_data(symbol, max_age=3600)  # 1 hour old
+        if cached:
+            cached['warning'] = 'Using old cached data - all sources failed'
+            return cached
+        
+        return {
+            'symbol': symbol, 
+            'price': 0, 
+            'error': 'All sources failed',
+            'timestamp': datetime.now().isoformat()
+        }
+    
+    @staticmethod
+    def _get_coingecko_price(symbol: str) -> Dict:
+        """Get price from CoinGecko API (enhanced)"""
+        symbol_map = {
+            'BTC-USD': 'bitcoin',
+            'ETH-USD': 'ethereum',
+            'ADA-USD': 'cardano',
+            'SOL-USD': 'solana',
+            'DOGE-USD': 'dogecoin',
+            'LTC-USD': 'litecoin'
+        }
+        
+        coin_id = symbol_map.get(symbol, symbol.lower().replace('-usd', ''))
+        
+        url = f"https://api.coingecko.com/api/v3/simple/price"
+        params = {
+            'ids': coin_id,
+            'vs_currencies': 'usd',
+            'include_24hr_change': 'true',
+            'include_24hr_vol': 'true',
+            'include_market_cap': 'true',
+            'include_last_updated_at': 'true'
+        }
+        
+        response = requests.get(url, params=params, timeout=10)
+        
+        if response.status_code == 429:
+            raise Exception("Rate limited")
+            
+        response.raise_for_status()
+        data = response.json()
+        
+        if coin_id in data:
+            coin_data = data[coin_id]
+            return {
+                'symbol': symbol,
+                'price': coin_data.get('usd', 0),
+                'change_24h': coin_data.get('usd_24h_change', 0),
+                'volume_24h': coin_data.get('usd_24h_vol', 0),
+                'market_cap': coin_data.get('usd_market_cap', 0),
+                'last_updated': coin_data.get('last_updated_at', 0),
+                'timestamp': datetime.now().isoformat(),
+                'source': 'coingecko'
+            }
+        
+        raise Exception("Symbol not found in CoinGecko")
+    
+    @staticmethod
+    def _get_coinbase_price(symbol: str) -> Dict:
+        """Get price from Coinbase Pro API"""
         try:
-            # Check rate limiting
-            if not CryptoDataFetcher._should_make_request(symbol):
-                # Return cached data or use yfinance as fallback
-                return CryptoDataFetcher._get_fallback_price(symbol)
-            
-            # Convert symbol format (BTC-USD -> bitcoin)
-            symbol_map = {
-                'BTC-USD': 'bitcoin',
-                'ETH-USD': 'ethereum',
-                'ADA-USD': 'cardano',
-                'SOL-USD': 'solana',
-                'DOGE-USD': 'dogecoin',
-                'LTC-USD': 'litecoin'
-            }
-            
-            coin_id = symbol_map.get(symbol, symbol.lower().replace('-usd', ''))
-            
-            url = f"https://api.coingecko.com/api/v3/simple/price"
-            params = {
-                'ids': coin_id,
-                'vs_currencies': 'usd',
-                'include_24hr_change': 'true',
-                'include_24hr_vol': 'true',
-                'include_market_cap': 'true'
-            }
-            
-            response = requests.get(url, params=params, timeout=10)
-            CryptoDataFetcher._update_request_time(symbol)
-            
-            if response.status_code == 429:
-                # Rate limited, use fallback
-                logging.warning(f"Rate limited for {symbol}, using fallback")
-                return CryptoDataFetcher._get_fallback_price(symbol)
-                
+            url = f"https://api.exchange.coinbase.com/products/{symbol}/ticker"
+            response = requests.get(url, timeout=8)
             response.raise_for_status()
             data = response.json()
             
-            if coin_id in data:
-                coin_data = data[coin_id]
+            if 'price' in data and 'volume' in data:
                 return {
                     'symbol': symbol,
-                    'price': coin_data.get('usd', 0),
-                    'change_24h': coin_data.get('usd_24h_change', 0),
-                    'volume_24h': coin_data.get('usd_24h_vol', 0),
-                    'market_cap': coin_data.get('usd_market_cap', 0),
-                    'timestamp': datetime.now().isoformat()
+                    'price': float(data['price']),
+                    'volume_24h': float(data.get('volume', 0)),
+                    'bid': float(data.get('bid', 0)),
+                    'ask': float(data.get('ask', 0)),
+                    'timestamp': datetime.now().isoformat(),
+                    'source': 'coinbase'
                 }
-            
         except Exception as e:
-            logging.error(f"Error fetching real-time price for {symbol}: {e}")
-            return CryptoDataFetcher._get_fallback_price(symbol)
-        
-        return {'symbol': symbol, 'price': 0, 'error': 'Data unavailable'}
+            raise Exception(f"Coinbase API failed: {e}")
+    
+    @staticmethod
+    def _get_binance_price(symbol: str) -> Dict:
+        """Get price from Binance API"""
+        try:
+            # Convert symbol format for Binance (BTC-USD -> BTCUSDT)
+            binance_symbol = symbol.replace('-', '').replace('USD', 'USDT')
+            url = f"https://api.binance.com/api/v3/ticker/24hr"
+            params = {'symbol': binance_symbol}
+            
+            response = requests.get(url, params=params, timeout=8)
+            response.raise_for_status()
+            data = response.json()
+            
+            if 'lastPrice' in data:
+                return {
+                    'symbol': symbol,
+                    'price': float(data['lastPrice']),
+                    'change_24h': float(data.get('priceChangePercent', 0)),
+                    'volume_24h': float(data.get('quoteVolume', 0)),
+                    'high_24h': float(data.get('highPrice', 0)),
+                    'low_24h': float(data.get('lowPrice', 0)),
+                    'timestamp': datetime.now().isoformat(),
+                    'source': 'binance'
+                }
+        except Exception as e:
+            raise Exception(f"Binance API failed: {e}")
     
     @staticmethod
     def _get_fallback_price(symbol: str) -> Dict:
@@ -531,6 +652,147 @@ class TechnicalAnalysis:
         }
     
     @staticmethod
+    def calculate_ichimoku(df: pd.DataFrame) -> Dict:
+        """Calculate Ichimoku Cloud indicators for advanced trend analysis"""
+        high = df['High'] if 'High' in df.columns else df['high_price'] if 'high_price' in df.columns else df['Close']
+        low = df['Low'] if 'Low' in df.columns else df['low_price'] if 'low_price' in df.columns else df['Close']
+        close = df['Close'] if 'Close' in df.columns else df['close_price'] if 'close_price' in df.columns else df['Close']
+        
+        # Conversion Line (Tenkan-sen): (9-period high + 9-period low) / 2
+        tenkan_sen = (high.rolling(9).max() + low.rolling(9).min()) / 2
+        
+        # Base Line (Kijun-sen): (26-period high + 26-period low) / 2
+        kijun_sen = (high.rolling(26).max() + low.rolling(26).min()) / 2
+        
+        # Leading Span A (Senkou Span A): (Conversion Line + Base Line) / 2
+        senkou_span_a = ((tenkan_sen + kijun_sen) / 2).shift(26)
+        
+        # Leading Span B (Senkou Span B): (52-period high + 52-period low) / 2
+        senkou_span_b = ((high.rolling(52).max() + low.rolling(52).min()) / 2).shift(26)
+        
+        # Lagging Span (Chikou Span): Current closing price shifted back 26 periods
+        chikou_span = close.shift(-26)
+        
+        return {
+            'tenkan_sen': tenkan_sen,
+            'kijun_sen': kijun_sen,
+            'senkou_span_a': senkou_span_a,
+            'senkou_span_b': senkou_span_b,
+            'chikou_span': chikou_span
+        }
+    
+    @staticmethod
+    def calculate_vwap(df: pd.DataFrame) -> pd.Series:
+        """Calculate Volume Weighted Average Price"""
+        high = df['High'] if 'High' in df.columns else df['high_price'] if 'high_price' in df.columns else df['Close']
+        low = df['Low'] if 'Low' in df.columns else df['low_price'] if 'low_price' in df.columns else df['Close']
+        close = df['Close'] if 'Close' in df.columns else df['close_price'] if 'close_price' in df.columns else df['Close']
+        volume = df['Volume'] if 'Volume' in df.columns else df['volume'] if 'volume' in df.columns else pd.Series([1] * len(df))
+        
+        # Typical Price = (High + Low + Close) / 3
+        typical_price = (high + low + close) / 3
+        
+        # VWAP = Cumulative(Typical Price * Volume) / Cumulative(Volume)
+        return (typical_price * volume).cumsum() / volume.cumsum()
+    
+    @staticmethod
+    def calculate_obv(close: pd.Series, volume: pd.Series) -> pd.Series:
+        """Calculate On-Balance Volume for trend confirmation"""
+        obv = pd.Series(index=close.index, dtype=float)
+        obv.iloc[0] = volume.iloc[0]
+        
+        for i in range(1, len(close)):
+            if close.iloc[i] > close.iloc[i-1]:
+                obv.iloc[i] = obv.iloc[i-1] + volume.iloc[i]
+            elif close.iloc[i] < close.iloc[i-1]:
+                obv.iloc[i] = obv.iloc[i-1] - volume.iloc[i]
+            else:
+                obv.iloc[i] = obv.iloc[i-1]
+        
+        return obv
+    
+    @staticmethod
+    def calculate_adx(high: pd.Series, low: pd.Series, close: pd.Series, period: int = 14) -> Dict:
+        """Calculate Average Directional Index for trend strength"""
+        # True Range calculation
+        tr1 = high - low
+        tr2 = (high - close.shift()).abs()
+        tr3 = (low - close.shift()).abs()
+        tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+        
+        # Directional Movement
+        plus_dm = high.diff()
+        minus_dm = low.diff() * -1
+        
+        plus_dm[plus_dm < 0] = 0
+        minus_dm[minus_dm < 0] = 0
+        
+        # Smooth the directional movements and true range
+        plus_di = 100 * (plus_dm.ewm(alpha=1/period).mean() / tr.ewm(alpha=1/period).mean())
+        minus_di = 100 * (minus_dm.ewm(alpha=1/period).mean() / tr.ewm(alpha=1/period).mean())
+        
+        # Calculate ADX
+        dx = (abs(plus_di - minus_di) / (plus_di + minus_di)) * 100
+        adx = dx.ewm(alpha=1/period).mean()
+        
+        return {
+            'adx': adx,
+            'plus_di': plus_di,
+            'minus_di': minus_di
+        }
+    
+    @staticmethod
+    def calculate_fibonacci_levels(df: pd.DataFrame, period: int = 50) -> Dict:
+        """Calculate Fibonacci retracement levels"""
+        close = df['Close'] if 'Close' in df.columns else df['close_price'] if 'close_price' in df.columns else df['Close']
+        
+        # Get high and low over the period
+        recent_high = close.rolling(period).max().iloc[-1]
+        recent_low = close.rolling(period).min().iloc[-1]
+        
+        diff = recent_high - recent_low
+        
+        return {
+            'fib_0': recent_high,
+            'fib_236': recent_high - 0.236 * diff,
+            'fib_382': recent_high - 0.382 * diff,
+            'fib_500': recent_high - 0.500 * diff,
+            'fib_618': recent_high - 0.618 * diff,
+            'fib_786': recent_high - 0.786 * diff,
+            'fib_100': recent_low
+        }
+    
+    @staticmethod
+    def calculate_market_structure(df: pd.DataFrame) -> Dict:
+        """Analyze market structure for trend identification"""
+        close = df['Close'] if 'Close' in df.columns else df['close_price'] if 'close_price' in df.columns else df['Close']
+        high = df['High'] if 'High' in df.columns else df['high_price'] if 'high_price' in df.columns else close
+        low = df['Low'] if 'Low' in df.columns else df['low_price'] if 'low_price' in df.columns else close
+        
+        # Calculate swing highs and lows
+        swing_high = high.rolling(5, center=True).max() == high
+        swing_low = low.rolling(5, center=True).min() == low
+        
+        # Trend strength based on higher highs/lower lows
+        recent_highs = high[swing_high].tail(3)
+        recent_lows = low[swing_low].tail(3)
+        
+        trend_strength = 0
+        if len(recent_highs) >= 2:
+            if recent_highs.iloc[-1] > recent_highs.iloc[-2]:
+                trend_strength += 1
+        if len(recent_lows) >= 2:
+            if recent_lows.iloc[-1] > recent_lows.iloc[-2]:
+                trend_strength += 1
+        
+        return {
+            'trend_strength': trend_strength,
+            'swing_high_count': swing_high.sum(),
+            'swing_low_count': swing_low.sum(),
+            'structure': 'bullish' if trend_strength >= 1 else 'bearish' if trend_strength <= -1 else 'neutral'
+        }
+    
+    @staticmethod
     def generate_signals(df: pd.DataFrame) -> Dict:
         """Generate comprehensive trading signals with enhanced accuracy"""
         if df.empty or len(df) < 50:
@@ -542,7 +804,7 @@ class TechnicalAnalysis:
         low_prices = df['Low'] if 'Low' in df.columns else df['low_price'] if 'low_price' in df.columns else close_prices
         volume = df['Volume'] if 'Volume' in df.columns else df['volume'] if 'volume' in df.columns else pd.Series([1] * len(df))
         
-        # Calculate all indicators
+        # Calculate all indicators (enhanced with advanced analysis)
         rsi = TechnicalAnalysis.calculate_rsi(close_prices)
         macd_data = TechnicalAnalysis.calculate_macd(close_prices)
         bb_data = TechnicalAnalysis.calculate_bollinger_bands(close_prices)
@@ -555,6 +817,14 @@ class TechnicalAnalysis:
         momentum = TechnicalAnalysis.calculate_momentum(close_prices)
         roc = TechnicalAnalysis.calculate_roc(close_prices)
         sr_levels = TechnicalAnalysis.calculate_support_resistance(df)
+        
+        # Advanced indicators for enhanced signal accuracy
+        ichimoku_data = TechnicalAnalysis.calculate_ichimoku(df)
+        vwap = TechnicalAnalysis.calculate_vwap(df)
+        obv = TechnicalAnalysis.calculate_obv(close_prices, volume)
+        adx_data = TechnicalAnalysis.calculate_adx(high_prices, low_prices, close_prices)
+        fib_levels = TechnicalAnalysis.calculate_fibonacci_levels(df)
+        market_structure = TechnicalAnalysis.calculate_market_structure(df)
         
         # Get latest values safely
         def get_latest(series, default=0):
@@ -577,6 +847,17 @@ class TechnicalAnalysis:
         latest_momentum = get_latest(momentum)
         latest_roc = get_latest(roc)
         latest_atr = get_latest(atr)
+        
+        # Advanced indicator latest values
+        latest_vwap = get_latest(vwap, latest_price)
+        latest_obv = get_latest(obv)
+        latest_adx = get_latest(adx_data['adx'], 25)
+        latest_plus_di = get_latest(adx_data['plus_di'], 25)
+        latest_minus_di = get_latest(adx_data['minus_di'], 25)
+        latest_tenkan = get_latest(ichimoku_data['tenkan_sen'], latest_price)
+        latest_kijun = get_latest(ichimoku_data['kijun_sen'], latest_price)
+        latest_senkou_a = get_latest(ichimoku_data['senkou_span_a'], latest_price)
+        latest_senkou_b = get_latest(ichimoku_data['senkou_span_b'], latest_price)
         
         # Enhanced signal scoring with multiple timeframe analysis
         score = 0
@@ -734,6 +1015,94 @@ class TechnicalAnalysis:
                     signals.append("High volume confirms bearish trend")
                     confidence_factors.append(0.6)
         
+        # 10. Advanced Ichimoku Cloud Analysis
+        if latest_price > latest_tenkan and latest_tenkan > latest_kijun:
+            if latest_price > max(latest_senkou_a, latest_senkou_b):
+                score += 3
+                signals.append("Ichimoku: Strong bullish cloud breakout")
+                confidence_factors.append(0.9)
+            else:
+                score += 2
+                signals.append("Ichimoku: Bullish momentum")
+                confidence_factors.append(0.7)
+        elif latest_price < latest_tenkan and latest_tenkan < latest_kijun:
+            if latest_price < min(latest_senkou_a, latest_senkou_b):
+                score -= 3
+                signals.append("Ichimoku: Strong bearish cloud breakdown")
+                confidence_factors.append(0.9)
+            else:
+                score -= 2
+                signals.append("Ichimoku: Bearish momentum")
+                confidence_factors.append(0.7)
+        
+        # 11. VWAP Analysis
+        if latest_price > latest_vwap * 1.02:
+            score += 1
+            signals.append("Price above VWAP (institutional bullishness)")
+            confidence_factors.append(0.6)
+        elif latest_price < latest_vwap * 0.98:
+            score -= 1
+            signals.append("Price below VWAP (institutional bearishness)")
+            confidence_factors.append(0.6)
+        
+        # 12. ADX Trend Strength Analysis
+        if latest_adx > 25:  # Strong trend
+            if latest_plus_di > latest_minus_di:
+                score += 2
+                signals.append("ADX: Strong bullish trend confirmed")
+                confidence_factors.append(0.8)
+            else:
+                score -= 2
+                signals.append("ADX: Strong bearish trend confirmed")
+                confidence_factors.append(0.8)
+        elif latest_adx < 20:  # Weak trend (consolidation)
+            score *= 0.7  # Reduce signal strength in consolidation
+            signals.append("ADX: Trend strength weak (consolidation)")
+            confidence_factors.append(0.4)
+        
+        # 13. Fibonacci Level Analysis
+        current_price = latest_price
+        fib_support_levels = [fib_levels['fib_618'], fib_levels['fib_500'], fib_levels['fib_382']]
+        fib_resistance_levels = [fib_levels['fib_236'], fib_levels['fib_0']]
+        
+        for level in fib_support_levels:
+            if abs(current_price - level) / level < 0.02:  # Within 2% of fib level
+                score += 1
+                signals.append(f"Price near Fibonacci support level")
+                confidence_factors.append(0.7)
+                break
+                
+        for level in fib_resistance_levels:
+            if abs(current_price - level) / level < 0.02:  # Within 2% of fib level
+                score -= 1
+                signals.append(f"Price near Fibonacci resistance level")
+                confidence_factors.append(0.7)
+                break
+        
+        # 14. Market Structure Analysis
+        if market_structure['structure'] == 'bullish':
+            score += 1
+            signals.append("Market structure: Bullish (higher highs/lows)")
+            confidence_factors.append(0.6)
+        elif market_structure['structure'] == 'bearish':
+            score -= 1
+            signals.append("Market structure: Bearish (lower highs/lows)")
+            confidence_factors.append(0.6)
+        
+        # 15. Multi-timeframe confluence (simulate by checking short vs long term indicators)
+        short_term_bullish = (latest_rsi < 70 and latest_macd > latest_macd_signal and 
+                             latest_ema_20 > latest_ema_50)
+        long_term_bullish = (latest_sma_short > latest_sma_long and latest_price > latest_vwap)
+        
+        if short_term_bullish and long_term_bullish:
+            score += 2
+            signals.append("Multi-timeframe bullish confluence")
+            confidence_factors.append(0.8)
+        elif not short_term_bullish and not long_term_bullish:
+            score -= 2
+            signals.append("Multi-timeframe bearish confluence")
+            confidence_factors.append(0.8)
+        
         # Calculate enhanced confidence score
         if confidence_factors:
             avg_confidence = sum(confidence_factors) / len(confidence_factors)
@@ -741,24 +1110,24 @@ class TechnicalAnalysis:
             avg_confidence = 0.5
         
         # Generate recommendation with enhanced accuracy
-        max_score = 15  # Increased max score due to more indicators
+        max_score = 25  # Increased max score due to advanced indicators
         normalized_score = score / max_score
         
-        if score >= 8:
+        if score >= 12:
             recommendation = "STRONG BUY"
-            confidence = min(avg_confidence * 1.2, 1.0)
-        elif score >= 4:
+            confidence = min(avg_confidence * 1.3, 1.0)
+        elif score >= 6:
             recommendation = "BUY"
-            confidence = avg_confidence
-        elif score <= -8:
+            confidence = min(avg_confidence * 1.1, 1.0)
+        elif score <= -12:
             recommendation = "STRONG SELL"
-            confidence = min(avg_confidence * 1.2, 1.0)
-        elif score <= -4:
+            confidence = min(avg_confidence * 1.3, 1.0)
+        elif score <= -6:
             recommendation = "SELL"
-            confidence = avg_confidence
+            confidence = min(avg_confidence * 1.1, 1.0)
         else:
             recommendation = "HOLD"
-            confidence = avg_confidence * 0.8
+            confidence = avg_confidence * 0.9
         
         # Calculate accuracy score based on signal consensus
         signal_strength = abs(score) / max_score
@@ -793,7 +1162,19 @@ class TechnicalAnalysis:
                 'atr': latest_atr,
                 'support': support,
                 'resistance': resistance,
-                'price': latest_price
+                'price': latest_price,
+                # Advanced indicators
+                'vwap': latest_vwap,
+                'obv': latest_obv,
+                'adx': latest_adx,
+                'plus_di': latest_plus_di,
+                'minus_di': latest_minus_di,
+                'ichimoku_tenkan': latest_tenkan,
+                'ichimoku_kijun': latest_kijun,
+                'ichimoku_senkou_a': latest_senkou_a,
+                'ichimoku_senkou_b': latest_senkou_b,
+                'fib_levels': fib_levels,
+                'market_structure': market_structure
             }
         }
 
