@@ -218,3 +218,18 @@
 2025-08-20 09:39:20,927 - ERROR - Failed to get ticker 'LTC-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
 2025-08-20 09:39:20,930 - ERROR - $LTC-USD: possibly delisted; no price data found  (period=30d)
 2025-08-20 09:39:20,930 - INFO - 🎉 Background data update completed
+2025-08-20 09:49:20,932 - INFO - 🔄 Starting background data update...
+2025-08-20 09:49:20,935 - ERROR - Failed to get ticker 'BTC-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:49:20,937 - ERROR - $BTC-USD: possibly delisted; no price data found  (period=30d)
+2025-08-20 09:49:23,940 - ERROR - Failed to get ticker 'ETH-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:49:23,943 - ERROR - $ETH-USD: possibly delisted; no price data found  (period=30d)
+2025-08-20 09:49:26,946 - ERROR - Failed to get ticker 'ADA-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:49:26,948 - ERROR - $ADA-USD: possibly delisted; no price data found  (period=30d)
+2025-08-20 09:49:29,952 - ERROR - Failed to get ticker 'SOL-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:49:29,955 - ERROR - $SOL-USD: possibly delisted; no price data found  (period=30d)
+2025-08-20 09:49:32,959 - ERROR - Failed to get ticker 'DOGE-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:49:32,961 - ERROR - $DOGE-USD: possibly delisted; no price data found  (period=30d)
+2025-08-20 09:49:33,207 - INFO - 127.0.0.1 - - [20/Aug/2025 09:49:33] "GET / HTTP/1.1" 200 -
+2025-08-20 09:49:35,965 - ERROR - Failed to get ticker 'LTC-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:49:35,968 - ERROR - $LTC-USD: possibly delisted; no price data found  (period=30d)
+2025-08-20 09:49:35,969 - INFO - 🎉 Background data update completed
