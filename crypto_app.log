@@ -180,3 +180,22 @@
 2025-08-13 15:59:58,879 - WARNING - Rate limited for DOGE-USD, using fallback
 2025-08-13 15:59:59,734 - WARNING - Rate limited for LTC-USD, using fallback
 2025-08-13 16:00:00,051 - INFO - 127.0.0.1 - - [13/Aug/2025 16:00:00] "GET /api/prices HTTP/1.1" 200 -
+2025-08-20 09:32:39,913 - INFO - 🔄 Starting background data update...
+2025-08-20 09:32:39,917 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.1.0.170:8080
+2025-08-20 09:32:39,917 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-20 09:32:39,930 - ERROR - Failed to get ticker 'BTC-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:32:39,932 - ERROR - Error fetching historical data for BTC-USD: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:32:42,936 - ERROR - Failed to get ticker 'ETH-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:32:42,939 - ERROR - Error fetching historical data for ETH-USD: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:32:45,942 - ERROR - Failed to get ticker 'ADA-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:32:45,944 - ERROR - $ADA-USD: possibly delisted; no price data found  (period=30d)
+2025-08-20 09:32:48,948 - ERROR - Failed to get ticker 'SOL-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:32:48,950 - ERROR - $SOL-USD: possibly delisted; no price data found  (period=30d)
+2025-08-20 09:32:51,954 - ERROR - Failed to get ticker 'DOGE-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:32:51,956 - ERROR - $DOGE-USD: possibly delisted; no price data found  (period=30d)
+2025-08-20 09:32:54,960 - ERROR - Failed to get ticker 'LTC-USD' reason: Failed to perform, curl: (6) Could not resolve host: guce.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2025-08-20 09:32:54,963 - ERROR - $LTC-USD: possibly delisted; no price data found  (period=30d)
+2025-08-20 09:32:54,966 - INFO - 🎉 Background data update completed
